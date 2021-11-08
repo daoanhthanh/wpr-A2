@@ -64,11 +64,14 @@ app.post("/attempts", async function(req, res) {
         })
         .toArray();
 
-    for (let i = 0; i < number_of_questions_to_display; i++) {
-        let random_number = Math.floor(
-            Math.random() * number_of_questions_to_display
-        );
-        random_question.push(full_data[random_number]);
+    const indices = generateQuestionIndices(
+        full_data.length,
+        number_of_questions_to_display
+    );
+    console.log("🚀 ~ file: server.js ~ line 71 ~ app.post ~ indices", indices);
+
+    for (let i of indices) {
+        random_question.push(full_data[i]);
     }
 
     response.questions = random_question;
@@ -85,8 +88,6 @@ app.post("/attempts", async function(req, res) {
         "Content-Type": "application/json",
         // ETag: "12345",
     });
-
-    console.log("line 90 okie");
 
     return res.status(201).json(response);
 });
@@ -142,12 +143,12 @@ app.post("/attempts/:id/submit", async function(req, res) {
 
 /**
  *
- * @param {*} _attemptId
- * @param {*} _attemptQuestions
- * @param {*} _score
- * @param {*} _startedAt
- * @param {*} _correctAnswers
- * @param {*} _userAnswers
+ * @param {string} _attemptId
+ * @param {Object} _attemptQuestions
+ * @param {number} _score
+ * @param {Date} _startedAt
+ * @param {object} _correctAnswers
+ * @param {Object} _userAnswers
  * @returns
  */
 function createSubmitResponse(
@@ -180,4 +181,27 @@ function createSubmitResponse(
     response.scoreText = _scoreText;
 
     return response;
+}
+
+/**
+ * Create random numbers in a range without duplication. Use to generate question indices
+ * @param {number} range
+ * @param {number} outputQuantity
+ * @returns random numbers in {@link range} without duplication
+ */
+function generateQuestionIndices(range, outputQuantity) {
+    let arr = [];
+    for (let i = 1; i <= range; i++) {
+        arr.push(i);
+    }
+
+    let result = [];
+
+    for (let i = 1; i <= outputQuantity; i++) {
+        const random = Math.floor(Math.random() * (range - i));
+        result.push(arr[random]);
+        arr[random] = arr[range - i];
+    }
+
+    return result;
 }
