@@ -9,7 +9,7 @@ let qName = 0;
 let userAnswers = {};
 let id = null;
 // const API = "https://wpr-quiz-api.herokuapp.com/attempts";
-const API = "http://localhost:3000/attempts";
+// const API = "http://localhost:3000/attempts";
 
 function main() {
     const start_button = document.querySelector("#start_button");
@@ -24,29 +24,36 @@ async function handleStartButton() {
 }
 
 async function fetchData(submitId, answer) {
-    let url = API;
+    // let url = "https://wpr-quiz-api.herokuapp.com/attempts";
+    let url = "http://localhost:3000/attempts";
     const defaultParams = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
+
         mode: "no-cors",
     };
     if (answer) {
         defaultParams.body = JSON.stringify({
             answers: userAnswers,
         });
+        console.log(
+            "🚀 ~ file: script.js ~ line 41 ~ fetchData ~ defaultParams.body",
+            defaultParams.body
+        );
     }
     if (submitId) {
-        url = `${API}/${submitId}/submit`;
+        // url = `https://wpr-quiz-api.herokuapp.com/attempts/${submitId}/submit`;
+        url = `http://localhost:3000/attempts/${submitId}/submit`;
+        console.log(
+            "🚀 ~ file: script.js ~ line 49 ~ fetchData ~ submitId",
+            submitId
+        );
     }
     const myResponse = await fetch(url, defaultParams);
-    console.log(
-        "🚀 ~ file: script.js ~ line 44 ~ fetchData ~ myResponse",
-        myResponse
-    );
-
     const myJson = await myResponse.json();
+    console.log("🚀 ~ file: script.js ~ line 52 ~ fetchData ~ myJson", myJson);
     return myJson;
 }
 
