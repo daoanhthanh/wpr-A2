@@ -8,6 +8,8 @@ let count = 1;
 let qName = 0;
 let userAnswers = {};
 let id = null;
+// const API = "https://wpr-quiz-api.herokuapp.com/attempts";
+const API = "http://localhost:3000/attempts";
 
 function main() {
     const start_button = document.querySelector("#start_button");
@@ -22,12 +24,13 @@ async function handleStartButton() {
 }
 
 async function fetchData(submitId, answer) {
-    let url = "https://wpr-quiz-api.herokuapp.com/attempts";
+    let url = API;
     const defaultParams = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
+        mode: "no-cors",
     };
     if (answer) {
         defaultParams.body = JSON.stringify({
@@ -35,9 +38,14 @@ async function fetchData(submitId, answer) {
         });
     }
     if (submitId) {
-        url = `https://wpr-quiz-api.herokuapp.com/attempts/${submitId}/submit`;
+        url = `${API}/${submitId}/submit`;
     }
     const myResponse = await fetch(url, defaultParams);
+    console.log(
+        "🚀 ~ file: script.js ~ line 44 ~ fetchData ~ myResponse",
+        myResponse
+    );
+
     const myJson = await myResponse.json();
     return myJson;
 }
