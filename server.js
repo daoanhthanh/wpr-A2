@@ -41,8 +41,7 @@ let _startedAt;
 //     const question = fs.readFileSync("./questions.json");
 //     const docs = JSON.parse(question);
 
-//     let data_temp = await questions.insertMany(docs);
-//     question_data = data_temp.ops;
+//     await questions.insertMany(docs);
 // }
 
 async function startServer() {
@@ -76,7 +75,7 @@ async function startAttempt(req, res) {
         })
         .toArray();
 
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < number_of_questions; i++) {
         let random_number = Math.floor(Math.random() * number_of_questions);
         random_question.push(full_data[random_number]);
     }
