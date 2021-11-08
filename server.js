@@ -46,7 +46,7 @@ async function startServer() {
 
     // Now every route can safely use the db and collection objects.
     await app.listen(port);
-    console.log(`May the Node be with you ⚔ ${port}!`);
+    console.log(`May the Node be with you 🚀 ${port}!`);
 }
 
 startServer();
@@ -160,13 +160,13 @@ function createSubmitResponse(
 ) {
     let response = {};
     let _scoreText = "";
-    if (5 <= (_score / number_of_questions_to_display) * 10 < 7)
-        _scoreText = "Practice more to improve it 😄 ";
-    else if (5 <= (_score / number_of_questions_to_display) * 10 < 7) {
+    const finalScore = (_score / number_of_questions_to_display) * 10;
+    if (finalScore < 5) _scoreText = "Practice more to improve it 😄 ";
+    else if (5 <= finalScore && finalScore < 7) {
         _scoreText = "Good, keep up 👍";
-    } else if (7 <= (_score / number_of_questions_to_display) * 10 < 9)
+    } else if (7 <= finalScore && finalScore < 9) {
         _scoreText = "Well done 👌";
-    else _scoreText = "Perfect 😍";
+    } else _scoreText = "Perfect 😍";
 
     response.questions = _attemptQuestions;
     response.completed = true;
