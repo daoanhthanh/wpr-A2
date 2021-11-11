@@ -52,7 +52,7 @@ async function startServer() {
 startServer();
 
 // Handle start attempt event
-app.post("/attempts", async function(req, res) {
+app.post("/attempts", async function (req, res) {
     let response = {};
     let random_question = [];
 
@@ -68,7 +68,6 @@ app.post("/attempts", async function(req, res) {
         full_data.length,
         number_of_questions_to_display
     );
-    console.log("🚀 ~ file: server.js ~ line 71 ~ app.post ~ indices", indices);
 
     for (let i of indices) {
         random_question.push(full_data[i]);
@@ -93,9 +92,10 @@ app.post("/attempts", async function(req, res) {
 });
 
 /**
- * Handle summit event
+ * Return response for checking correct answers
+ * @requires id 
  */
-app.post("/attempts/:id/submit", async function(req, res) {
+app.post("/attempts/:id/submit", async function (req, res) {
     const attempt_id = req.params.id;
 
     const user_answers = req.body.answers;
@@ -107,9 +107,21 @@ app.post("/attempts/:id/submit", async function(req, res) {
         return res.sendStatus(404);
     }
 
+    // update attempt status to be completed
+    await attempts.updateOne({ _id: mongodb.ObjectId(attempt_id) }, { $set: { completed: true } })
+
+    const attempt_questions = await attempts.find({ _id: mongodb.ObjectId(attempt_id) },
+        {
+            projection:
+            {
+                "questions._id": 1,
+                _id: 0
+            }
+        }).toArray();
+
     let question_ids = [];
-    for (let i of Object.keys(user_answers)) {
-        question_ids.push(mongodb.ObjectId(i));
+    for (let i of attempt_questions[0].questions) {
+        question_ids.push(i._id);
     }
 
     let correct_answers = {};
@@ -184,14 +196,17 @@ function createSubmitResponse(
 }
 
 /**
- * Create random numbers in a range without duplication. Use to generate question indices
- * @param {number} range
- * @param {number} outputQuantity
+ * Create random numbers in a range without duplication. Used to generate question indices x,
+ * satisfies: x = {x | x ∈ [ 0, {@link range}) }  
+ * @param {number} range satisfies {@code range >= outputQuantity}
+ * @param {number} outputQuantity number of random numbers want to obtain
  * @returns random numbers in {@link range} without duplication
  */
 function generateQuestionIndices(range, outputQuantity) {
+    if (range < outputQuantity) throw new Error('Range must not be smaller than the number of output');
+
     let arr = [];
-    for (let i = 1; i <= range; i++) {
+    for (let i = 0; i < range; i++) {
         arr.push(i);
     }
 

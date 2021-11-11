@@ -9,7 +9,7 @@ let qName = 0;
 let userAnswers = {};
 let id = null;
 // const API = "https://wpr-quiz-api.herokuapp.com/attempts";
-// const API = "http://localhost:3000/attempts";
+const API = "http://localhost:3000/attempts";
 
 function main() {
     const start_button = document.querySelector("#start_button");
@@ -24,36 +24,25 @@ async function handleStartButton() {
 }
 
 async function fetchData(submitId, answer) {
-    // let url = "https://wpr-quiz-api.herokuapp.com/attempts";
-    let url = "http://localhost:3000/attempts";
+    let url = API;
     const defaultParams = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
 
-        mode: "no-cors",
+        // mode: "no-cors", // the problem causes unexpected error
     };
     if (answer) {
         defaultParams.body = JSON.stringify({
             answers: userAnswers,
         });
-        console.log(
-            "🚀 ~ file: script.js ~ line 41 ~ fetchData ~ defaultParams.body",
-            defaultParams.body
-        );
     }
     if (submitId) {
-        // url = `https://wpr-quiz-api.herokuapp.com/attempts/${submitId}/submit`;
-        url = `http://localhost:3000/attempts/${submitId}/submit`;
-        console.log(
-            "🚀 ~ file: script.js ~ line 49 ~ fetchData ~ submitId",
-            submitId
-        );
+        url = `${API}/${submitId}/submit`;
     }
     const myResponse = await fetch(url, defaultParams);
     const myJson = await myResponse.json();
-    console.log("🚀 ~ file: script.js ~ line 52 ~ fetchData ~ myJson", myJson);
     return myJson;
 }
 
@@ -132,6 +121,7 @@ function createAnswer(input_question, index) {
 
 function handleAnsClick(e) {
     userAnswers[e.target.name] = e.target.value;
+
 }
 
 function handleSubmitButton() {
@@ -156,6 +146,7 @@ async function generateResult() {
     quiz_body.scrollIntoView();
     document.body.classList.remove("no-scroll");
     _confirm.classList.add("hidden");
+
     const data = await fetchData(id, userAnswers);
     const disable = document.querySelectorAll("input");
     const review_quiz = document.querySelector("#review-quiz");
